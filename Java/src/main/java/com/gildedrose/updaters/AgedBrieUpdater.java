@@ -9,7 +9,7 @@ public class AgedBrieUpdater implements ItemUpdater {
     public void update(Item item) {
         item.sellIn--;
         int delta = item.sellIn < 0 ? 2 : 1;
-        item.quality = Math.max(MIN_QUALITY, item.quality + delta);
+        item.quality = Math.min(MAX_QUALITY, item.quality + delta);
     }
 
 }
