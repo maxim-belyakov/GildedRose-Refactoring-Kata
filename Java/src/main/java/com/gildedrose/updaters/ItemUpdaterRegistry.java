@@ -27,6 +27,7 @@ public class ItemUpdaterRegistry {
     public static ItemUpdaterRegistry defaults() {
         return new ItemUpdaterRegistry(new RegularItemUpdater())
                 .register("Aged Brie", new AgedBrieUpdater())
-                .register("Sulfuras, Hand of Ragnaros", new SulfurasUpdater());
+                .register("Sulfuras, Hand of Ragnaros", new SulfurasUpdater())
+                .register("Backstage passes to a TAFKAL80ETC concert", new BackstagePassUpdater());
     }
 }

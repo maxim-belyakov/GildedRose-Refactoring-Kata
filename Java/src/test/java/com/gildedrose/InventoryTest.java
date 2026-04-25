@@ -11,6 +11,7 @@ class InventoryTest {
 
     private static final String AGED_BRIE = "Aged Brie";
     private static final String SULFURAS = "Sulfuras, Hand of Ragnaros";
+    private static final String BACKSTAGE = "Backstage passes to a TAFKAL80ETC concert";
 
     private static Item afterOneDay(String name, int sellIn, int quality) {
         return afterDays(name, sellIn, quality, 1);
@@ -123,5 +124,52 @@ class InventoryTest {
         assertEquals(quality, it.quality);
     }
 
-    // backstage tests are added together with BackstagePassUpdater in the next commit
+    // backstage passes
+
+    @Test
+    @DisplayName("backstage passes gain one quality when more than ten days remain")
+    void backstageEarlyGains() {
+        Item it = afterOneDay(BACKSTAGE, 14, 22);
+        assertEquals(13, it.sellIn);
+        assertEquals(23, it.quality);
+    }
+
+    @Test
+    @DisplayName("backstage passes gain two when ten or fewer days remain")
+    void backstageMidwindowGains() {
+        Item it = afterOneDay(BACKSTAGE, 10, 22);
+        assertEquals(9, it.sellIn);
+        assertEquals(24, it.quality);
+    }
+
+    @Test
+    @DisplayName("backstage passes gain three when five or fewer days remain")
+    void backstageFinalStretchGains() {
+        Item it = afterOneDay(BACKSTAGE, 5, 22);
+        assertEquals(4, it.sellIn);
+        assertEquals(25, it.quality);
+    }
+
+    @Test
+    @DisplayName("backstage passes drop to zero once the concert has passed")
+    void backstageWorthlessAfterConcert() {
+        Item it = afterOneDay(BACKSTAGE, 0, 35);
+        assertEquals(-1, it.sellIn);
+        assertEquals(0, it.quality);
+    }
+
+    @ParameterizedTest(name = "backstage ({0},{1}) -> ({2},{3})")
+    @CsvSource({
+        "11, 22, 10, 23",
+        " 6, 22,  5, 24",
+        " 1, 22,  0, 25",
+        "-2, 13, -3,  0",
+        "10, 49,  9, 50",
+        " 5, 48,  4, 50"
+    })
+    void backstageQualityTable(int sellIn, int quality, int expSellIn, int expQuality) {
+        Item it = afterOneDay(BACKSTAGE, sellIn, quality);
+        assertEquals(expSellIn, it.sellIn);
+        assertEquals(expQuality, it.quality);
+    }
 }
