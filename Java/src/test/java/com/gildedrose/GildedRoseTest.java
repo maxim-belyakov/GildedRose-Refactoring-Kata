@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class GildedRoseTest {
 
     private static final String AGED_BRIE = "Aged Brie";
+    private static final String SULFURAS = "Sulfuras, Hand of Ragnaros";
 
     private static Item afterOneDay(String name, int sellIn, int quality) {
         return afterDays(name, sellIn, quality, 1);
@@ -98,5 +99,27 @@ class GildedRoseTest {
         Item it = afterOneDay(AGED_BRIE, sellIn, quality);
         assertEquals(expSellIn, it.sellIn);
         assertEquals(expQuality, it.quality);
+    }
+
+    // sulfuras
+
+    @Test
+    @DisplayName("sulfuras never moves: quality and sellIn stay put")
+    void sulfurasIsImmutable() {
+        Item it = afterDays(SULFURAS, 6, 80, 10);
+        assertEquals(6, it.sellIn);
+        assertEquals(80, it.quality);
+    }
+
+    @ParameterizedTest(name = "sulfuras at ({0},{1}) is unchanged")
+    @CsvSource({
+        " 12, 80",
+        "  0, 80",
+        " -3, 80"
+    })
+    void sulfurasUnchangedRegardlessOfState(int sellIn, int quality) {
+        Item it = afterOneDay(SULFURAS, sellIn, quality);
+        assertEquals(sellIn, it.sellIn);
+        assertEquals(quality, it.quality);
     }
 }
