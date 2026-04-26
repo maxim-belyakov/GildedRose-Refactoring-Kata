@@ -172,4 +172,50 @@ class InventoryTest {
         assertEquals(expSellIn, it.sellIn);
         assertEquals(expQuality, it.quality);
     }
+
+    // conjured items
+
+    @Test
+    @DisplayName("conjured item losess two quality per tick (twice as fast as regular)")
+    void conjuredItemTicks() {
+        Item it = afterOneDay("Conjured Mana Cake", 8, 17);
+        assertEquals(7, it.sellIn);
+        assertEquals(15, it.quality);
+    }
+
+    @Test
+    @DisplayName(" conjured item past expiry decays four times the regular rate")
+    void conjuredItemExpiredDecaysFaster() {
+        Item it = afterOneDay("Conjured Mana Cake", 0, 10);
+        assertEquals(-1, it.sellIn);
+        assertEquals(6, it.quality);
+    }
+
+    @Test
+    @DisplayName("conjured item quality never falls below zero ")
+    void conjuredItemQualityFloor() {
+        Item it = afterDays("Conjured Mana Cake", -2, 3, 5);
+        assertEquals(0, it.quality);
+    }
+
+    @Test
+    @DisplayName("any iitem whose name starts with 'Conjured ' uses the conjured rule")
+    void conjuredPrefixCoversTheWholeCategory() {
+        Item sword = afterOneDay("Conjured Sword of Looking", 4, 20);
+        assertEquals(3, sword.sellIn);
+        assertEquals(18, sword.quality);
+    }
+
+    @ParameterizedTest(name = "conjured ({0},{1}) -> ({2},{3})")
+    @CsvSource({
+        " 5, 10,  4,  8",
+        " 0, 10, -1,  6",
+        "-1,  5, -2,  1",
+        " 3,  1,  2,  0"
+    })
+    void conjuredDegradationTable(int sellIn, int quality, int expSellIn, int expQuality) {
+        Item it = afterOneDay("Conjured Mana Cake", sellIn, quality);
+        assertEquals(expSellIn, it.sellIn);
+        assertEquals(expQuality, it.quality);
+    }
 }
